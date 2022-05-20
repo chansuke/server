@@ -190,6 +190,9 @@ btr_cur_search_to_nth_level_func(
 	btr_cur_search_to_nth_level_func(i,l,t,m,lm,c,mtr)
 #endif /* BTR_CUR_HASH_ADAPT */
 
+struct btr_pos_t;
+struct btr_path_t;
+
 /*****************************************************************//**
 Opens a cursor at either end of an index.
 @return DB_SUCCESS or error code */
@@ -712,35 +715,6 @@ limit, merging it to a neighbor is tried */
 #define BTR_CUR_PAGE_COMPRESS_LIMIT(index) \
 	((srv_page_size * (ulint)((index)->merge_threshold)) / 100)
 
-/** A slot in the path array. We store here info on a search path down the
-tree. Each slot contains data on a single level of the tree. */
-struct btr_path_t {
-	/* Assume a page like:
-	records:             (inf, a, b, c, d, sup)
-	index of the record:    0, 1, 2, 3, 4, 5
-	*/
-
-	/** Index of the record where the page cursor stopped on this level
-	(index in alphabetical order). Value ULINT_UNDEFINED denotes array
-	end. In the above example, if the search stopped on record 'c', then
-	nth_rec will be 3. */
-	ulint	nth_rec;
-
-	/** Number of the records on the page, not counting inf and sup.
-	In the above example n_recs will be 4. */
-	ulint	n_recs;
-
-	/** Number of the page containing the record. */
-	uint32_t page_no;
-
-	/** Level of the page. If later we fetch the page under page_no
-	and it is no different level then we know that the tree has been
-	reorganized. */
-	ulint	page_level;
-};
-
-#define BTR_PATH_ARRAY_N_SLOTS	250	/*!< size of path array (in slots) */
-
 /** Values for the flag documenting the used search method */
 enum btr_cur_method {
 	BTR_CUR_HASH = 1,	/*!< successful shortcut using
@@ -823,10 +797,6 @@ struct btr_cur_t {
 	ulint		fold;		/*!< fold value used in the search if
 					flag is BTR_CUR_HASH */
 	/* @} */
-	btr_path_t*	path_arr;	/*!< in estimating the number of
-					rows in range, we store in this array
-					information of the path through
-					the tree */
 	rtr_info_t*	rtr_info;	/*!< rtree search info */
 	btr_cur_t():thr(NULL), rtr_info(NULL) {}
 					/* default values */
@@ -847,7 +817,6 @@ struct btr_cur_t {
 		n_fields = 0;
 		n_bytes = 0;
 		fold = 0;
-		path_arr = NULL;
 		rtr_info = NULL;
 	}
 };
