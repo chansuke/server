@@ -7601,7 +7601,8 @@ static int binlog_online_alter_commit(THD *thd, bool all)
   for (auto &cache_mngr: thd->online_alter_cache_list)
   {
     auto *binlog= cache_mngr.share->online_alter_binlog;
-    DBUG_ASSERT(binlog);
+    if (!binlog)  /* can be NULL if concurrent online ALTER TABLE failed */
+      continue;
 
     // do not set STMT_END for last event to leave table open in altering thd
     error= binlog_flush_pending_rows_event(thd, false, true, binlog,

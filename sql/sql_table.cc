@@ -11894,24 +11894,6 @@ copy_data_between_tables(THD *thd, TABLE *from, TABLE *to,
       error= online_alter_read_from_binlog(thd, &rgi, binlog);
     }
   }
-  else if (online) // error was on copy stage
-  {
-    /*
-       We need to issue a barrier to clean up gracefully.
-       Without this, following possible:
-       T1: ALTER TABLE starts
-       T2: INSERT starts
-       T1: ALTER TABLE fails with error (i.e. ER_DUP_KEY)
-       T1: from->s->online_alter_binlog sets to NULL
-       T2: INSERT committs
-       T2: thd->online_alter_cache_list is not empty
-       T2: binlog_commit: DBUG_ASSERT(binlog); is issued.
-    */
-    // Ignore the return result. We already have an error.
-    thd->mdl_context.upgrade_shared_lock(from->mdl_ticket, 
-                                         MDL_SHARED_NO_WRITE,
-                                         thd->variables.lock_wait_timeout);
-  }
 #endif
 
   if (error > 0 && !from->s->tmp_table)
