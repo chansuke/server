@@ -247,7 +247,8 @@ trx_undo_get_next_rec_from_next_page(const buf_block_t *&block,
   if (next == FIL_NULL)
     return nullptr;
 
-  block= buf_page_get(page_id_t(block->page.id().space(), next), 0, mode, mtr);
+  block= buf_page_get_gen(page_id_t(block->page.id().space(), next), 0, mode,
+                          nullptr, BUF_GET_POSSIBLY_FREED, mtr);
 
   return block ? trx_undo_page_get_first_rec(block, page_no, offset) : nullptr;
 }

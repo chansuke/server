@@ -2883,7 +2883,9 @@ ibuf_merge_corrupted:
 			if (err) {
 				*err = e;
 			}
+
 			buf_pool.corrupted_evict(&block->page, state);
+			return nullptr;
 		}
 
 		state = block->page.state();
