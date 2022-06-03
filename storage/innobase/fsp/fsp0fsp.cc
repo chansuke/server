@@ -2246,7 +2246,7 @@ fseg_alloc_free_page_general(
 	space_id = page_get_space_id(page_align(seg_header));
 	space = mtr->x_lock_space(space_id);
 	inode = fseg_inode_try_get(seg_header, space_id, space->zip_size(),
-				   mtr, &iblock);
+				   mtr, &iblock, err);
 	if (!inode) {
 		return nullptr;
 	}
