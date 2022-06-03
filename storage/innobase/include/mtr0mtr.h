@@ -389,7 +389,7 @@ public:
   /** @return whether the log and memo are empty */
   bool is_empty() const { return m_memo.size() == 0 && m_log.size() == 0; }
 
-  /** Write a OPT_PAGE_CHECKSUM record. */
+  /** Write an OPT_PAGE_CHECKSUM record. */
   inline void page_checksum(const buf_page_t &bpage);
 
   /** Write request types */
