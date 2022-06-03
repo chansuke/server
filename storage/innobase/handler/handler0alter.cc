@@ -10422,7 +10422,10 @@ handle_error:
 			default:
 				sql_print_error("InnoDB: %s: %s\n", op,
 						ut_strerr(error));
-				DBUG_ASSERT(0);
+				DBUG_ASSERT(error == DB_IO_ERROR
+					    || error == DB_DECRYPTION_FAILED
+					    || error == DB_PAGE_CORRUPTED
+					    || error == DB_CORRUPTION);
 				my_error(ER_INTERNAL_ERROR, MYF(0), op);
 			}
 
