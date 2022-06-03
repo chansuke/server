@@ -363,7 +363,7 @@ xdes_get_descriptor_with_space_hdr(
 					 BUF_GET_POSSIBLY_FREED, mtr, err);
 	}
 
-	if (desc_block != NULL) {
+	if (desc_block) {
 		*desc_block = block;
 	}
 
@@ -1073,8 +1073,6 @@ static MY_ATTRIBUTE((warn_unused_result, nonnull))
 buf_block_t *fsp_alloc_free_page(fil_space_t *space, uint32_t hint,
                                  mtr_t *mtr, mtr_t *init_mtr, dberr_t *err)
 {
-  const auto space_id = space->id;
-
   ut_d(space->modify_check(*mtr));
   buf_block_t *block= fsp_get_header(space, mtr, err);
   if (!block)
@@ -1138,14 +1136,14 @@ buf_block_t *fsp_alloc_free_page(fil_space_t *space, uint32_t hint,
   uint32_t space_size = mach_read_from_4(FSP_HEADER_OFFSET + FSP_SIZE +
                                          block->page.frame);
   ut_ad(space_size == space->size_in_header ||
-        (space_id == TRX_SYS_SPACE &&
+        (space->id == TRX_SYS_SPACE &&
          srv_startup_is_before_trx_rollback_phase));
 
   if (space_size <= page_no)
   {
     /* It must be that we are extending a single-table tablespace
     whose size is still < 64 pages */
-    ut_ad(!is_system_tablespace(space_id));
+    ut_ad(!is_system_tablespace(space->id));
     if (page_no >= FSP_EXTENT_SIZE)
     {
       ib::error() << "Trying to extend "
@@ -2306,7 +2304,7 @@ fsp_reserve_free_pages(
   ut_ad(space != fil_system.sys_space && space != fil_system.temp_space);
   ut_ad(size < FSP_EXTENT_SIZE);
 
-  dberr_t err;
+  dberr_t err= DB_OUT_OF_FILE_SPACE;
   const xdes_t *descr=
     xdes_get_descriptor_with_space_hdr(header, space, 0, mtr, &err);
   if (!descr)
