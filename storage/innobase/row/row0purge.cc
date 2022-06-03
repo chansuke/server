@@ -220,16 +220,7 @@ close_and_exit:
 		btr_cur_pessimistic_delete(
 			&err, FALSE, btr_pcur_get_btr_cur(&node->pcur), 0,
 			false, &mtr);
-
-		switch (err) {
-		case DB_SUCCESS:
-			break;
-		case DB_OUT_OF_FILE_SPACE:
-			success = false;
-			break;
-		default:
-			ut_error;
-		}
+		success = err == DB_SUCCESS;
 	}
 
 func_exit:

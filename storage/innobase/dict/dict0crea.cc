@@ -766,6 +766,11 @@ func_exit:
 
 	btr_pcur_move_to_next_user_rec(&pcur, &mtr);
 
+	if (UNIV_UNLIKELY(btr_pcur_is_after_last_on_page(&pcur))) {
+		err = DB_CORRUPTION;
+		goto func_exit;
+	}
+
 	if (index->is_readable()) {
 		index->set_modified(mtr);
 
@@ -1288,16 +1293,8 @@ dict_create_index_step(
 function_exit:
 	trx->error_state = err;
 
-	if (err == DB_SUCCESS) {
-		/* Ok: do nothing */
-
-	} else if (err == DB_LOCK_WAIT) {
-
-		return(NULL);
-	} else {
-		/* SQL error detected */
-
-		return(NULL);
+	if (UNIV_UNLIKELY(err != DB_SUCCESS)) {
+		return nullptr;
 	}
 
 	thr->run_node = que_node_get_parent(node);
