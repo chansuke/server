@@ -1526,7 +1526,6 @@ void Wsrep_schema::clear_allowlist()
     WSREP_ERROR("Unable to get thd");
     return;
   }
-  my_thread_init();
   thd->thread_stack= (char*)&thd;
   wsrep_init_thd_for_schema(thd);
   TABLE* allowlist_table= 0;
@@ -1562,7 +1561,6 @@ void Wsrep_schema::clear_allowlist()
   Wsrep_schema_impl::finish_stmt(thd);
 out:
   delete thd;
-  my_thread_end();
 }
 
 void Wsrep_schema::store_allowlist(std::vector<std::string>& ip_allowlist)
@@ -1573,7 +1571,6 @@ void Wsrep_schema::store_allowlist(std::vector<std::string>& ip_allowlist)
     WSREP_ERROR("Unable to get thd");
     return;
   }
-  my_thread_init();
   thd->thread_stack= (char*)&thd;
   wsrep_init_thd_for_schema(thd);
   TABLE* allowlist_table= 0;
@@ -1604,24 +1601,25 @@ void Wsrep_schema::store_allowlist(std::vector<std::string>& ip_allowlist)
   Wsrep_schema_impl::finish_stmt(thd);
 out:
   delete thd;
-  my_thread_end();
 }
 
 bool Wsrep_schema::allowlist_check(Wsrep_allowlist_key key,
                                    const std::string& value)
 {
+
   // We don't have wsrep schema initialized at this point
   if (wsrep_schema_ready == false)
   {
     return true;
   }
+  my_thread_init();
   THD *thd = new THD(next_thread_id());
   if (!thd)
   {
     WSREP_ERROR("Unable to get thd");
     return false;
   }
-  my_thread_init();
+
   thd->thread_stack= (char*)&thd;
   int error;
   TABLE *allowlist_table= 0;
