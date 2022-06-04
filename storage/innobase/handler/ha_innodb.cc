@@ -7901,7 +7901,8 @@ ha_innobase::build_template(
 				}
 			}
 		}
-		if (active_index == pushed_idx_cond_keyno) {
+		if (active_index == pushed_idx_cond_keyno
+		    && active_index != MAX_KEY) {
 			m_prebuilt->idx_cond = this;
 		}
 	} else {
