@@ -255,6 +255,21 @@ Warnings:
 Warning	1287	The table parameter 'bka_table_name_type' is deprecated and will be removed in a future release
 DROP TABLE tbl_a;
 DROP TABLE tbl_b;
+# MDEV-28564 Deprecate spider_local_lock_table
+SET spider_local_lock_table = 1;
+Warnings:
+Warning	1287	'@@spider_local_lock_table' is deprecated and will be removed in a future release
+SHOW VARIABLES LIKE "spider_local_lock_table";
+Variable_name	Value
+spider_local_lock_table	1
+CREATE TABLE tbl_a (a INT) ENGINE=Spider COMMENT='llt "1"';
+Warnings:
+Warning	1287	The table parameter 'llt' is deprecated and will be removed in a future release
+CREATE TABLE tbl_b (a INT) ENGINE=Spider COMMENT='local_lock_table "1"';
+Warnings:
+Warning	1287	The table parameter 'local_lock_table' is deprecated and will be removed in a future release
+DROP TABLE tbl_a;
+DROP TABLE tbl_b;
 DROP DATABASE auto_test_local;
 for master_1
 for child2

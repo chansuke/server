@@ -2007,7 +2007,7 @@ bool spider_param_same_server_link(
  */
 static MYSQL_THDVAR_BOOL(
   local_lock_table, /* name */
-  PLUGIN_VAR_OPCMDARG, /* opt */
+  PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_DEPRECATED, /* opt */
   "Remote server transmission when lock tables is executed at local",
     /* comment */
   NULL, /* check */

@@ -152,6 +152,15 @@ eval CREATE TABLE tbl_b (a INT) $MASTER_1_ENGINE COMMENT='bka_table_name_type "1
 DROP TABLE tbl_a;
 DROP TABLE tbl_b;
 
+--echo # MDEV-28564 Deprecate spider_local_lock_table
+SET spider_local_lock_table = 1;
+SHOW VARIABLES LIKE "spider_local_lock_table";
+eval CREATE TABLE tbl_a (a INT) $MASTER_1_ENGINE COMMENT='llt "1"';
+eval CREATE TABLE tbl_b (a INT) $MASTER_1_ENGINE COMMENT='local_lock_table "1"';
+
+DROP TABLE tbl_a;
+DROP TABLE tbl_b;
+
 DROP DATABASE auto_test_local;
 
 --disable_query_log
